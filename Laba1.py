@@ -1,10 +1,8 @@
 print("Hello World")
 
-print(50 * "-")
-
-integer = 3
-floatVariable = 3.14
-string = "text"
+integer = int(3)
+floatVariable = float(3)
+string = str(floatVariable)
 boolean = True
 listVariable = [1, 2, 3]
 tupleVariable = (1, 2, 3)
@@ -20,10 +18,8 @@ print(tupleVariable, type(tupleVariable))
 print(dictionary, type(dictionary))
 print(setVariable, type(setVariable))
 
-print(20 * "-")
-
-a = int(input("Введіть перше число: "))
-b = int(input("Введіть друге число: "))
+a = 15
+b = 6
 
 print(a ,"+", b, "=", a+b) # Додавання
 print(a, "-", b, "=", a-b) # Віднімання
@@ -32,12 +28,4 @@ print(a, "*", b, "=", a*b) # Множення
 print(a, "%", b, "=", a%b) # Остача від ділення
 print(a, "//", b, "=", a//b) # Цілочисленне ділення
 print(a, "**", b, "=", a**b) # Зведення в степінь
-
-print(20*"-")
-
-if a > b:
-    print(a, ' є більшим за ', b)
-elif a < b:
-    print(a, ' є меншим за ', b)
-else:
-    print(a, ' дорівнює ', b)
+print(a == b) # Порівняння
