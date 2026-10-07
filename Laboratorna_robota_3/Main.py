@@ -1,40 +1,39 @@
 # Константи
 COMMANDS = [
-    { # 1
+    {  # 1
         "name": "Показати список команд",
-        "action": "show_commands_list"
+        "action": "show_available_commands"
     },
-    { # 2
+    {  # 2
         "name": "Показати каталог",
         "action": "show_catalog"
     },
-    { # 3
+    {  # 3
         "name": "Показати кошик",
         "action": "show_cart"
     },
-    { # 4
+    {  # 4
         "name": "Оплатити товари в кошику",
         "action": "buy_products_in_cart"
     },
-    { # 5
+    {  # 5
         "name": "Добавити товар до кошика",
         "action": "add_to_cart"
     },
-    { # 6
+    {  # 6
         "name": "Видалити товар з кошика",
         "action": "remove_from_cart"
     },
-    { # 7
+    {  # 7
         "name": "Увійти як адміністратор",
         "action": "enter_admin_panel"
     },
-    { # 8
+    {  # 8
         "name": "Вийти з програми",
         "action": "exit_program"
     },
 ]
-
-ADMINS = { # Логін: пароль
+ADMINS = {  # Логін: пароль
     "Admin1": "admin1",
     "Admin2": "admin2"
 }
@@ -75,48 +74,46 @@ catalog = [
 
 shopping_cart = []
 
+available_commands = []
+
 is_authenticated = False
 
 
 # Внутрішні функції
 def is_cart_empty():
-    if len(shopping_cart) == 0:
+    if not shopping_cart:
         print("Кошик порожній.")
+        show_available_commands()
         return True
     return False
 
 
-def get_in_total():
-    in_total = 0
-
-    for item in shopping_cart:
-        in_total += item['price']
-
-    return in_total
+get_in_total = lambda: sum(item['price'] for item in shopping_cart)
 
 
 # Функції консольних команд
-def show_commands_list(commands_to_show=None):
+def show_available_commands(commands_to_show=None):
+    global available_commands  # Отримання доступу до глобальної змінної
     if commands_to_show is None:
         commands_to_show = range(1, len(COMMANDS) + 1)
 
-    if len(commands_to_show) == len(COMMANDS):
-        print("Список команд:")
-    else:
-        print("")
-        print("Рекомендовані дії:")
-
+    available_commands.clear()  # Очищення списку доступних команд
     for command_num in commands_to_show:
-        if 1 <= command_num <= len(COMMANDS):
-            print(f"{command_num}. {COMMANDS[command_num - 1]['name']}")
+        available_commands.append(COMMANDS[command_num - 1])
+
+    print("")
+    print("Список команд:")
+
+    for command_num, command in enumerate(available_commands):
+        print(f"{command_num + 1}. {command['name']}")
 
 
 def show_catalog():
     print("Каталог товарів:")
-    for item in catalog:
-        print(f"{catalog.index(item)+1}. {item['name']} - {item['price']:.2f} грн")
+    for item_num, item in enumerate(catalog):
+        print(f"{item_num + 1}. {item['name']} - {item['price']:.2f} грн")
 
-    show_commands_list([1, 3, 5, 8])
+    show_available_commands([1, 3, 5, 8])
 
 
 def show_cart():
@@ -124,21 +121,19 @@ def show_cart():
         return
 
     print("Кошик:")
-    for item in shopping_cart:
-        print(f"{shopping_cart.index(item) + 1}. {item['name']} - {item['price']:.2f} грн")
+    for item_num, item in enumerate(shopping_cart):
+        print(f"{item_num + 1}. {item['name']} - {item['price']:.2f} грн")
 
-    in_total = get_in_total()
-    print(f"Загальна сума: {in_total:.2f} грн")
+    print(f"Загальна сума: {get_in_total():.2f} грн")
 
-    show_commands_list([1, 4, 6, 8])
+    show_available_commands([1, 4, 6, 8])
 
 
 def buy_products_in_cart():
     if is_cart_empty():
         return
 
-    in_total = get_in_total()
-    print(f"Куплено товари в кошику на суму: {in_total:.2f} грн")
+    print(f"Куплено товари в кошику на суму: {get_in_total():.2f} грн")
     shopping_cart.clear()
     show_cart()
 
@@ -157,7 +152,7 @@ def add_to_cart():
     product_to_add = catalog[choice].copy()
     shopping_cart.append(product_to_add)
 
-    print(f'Товар "{catalog[choice]["name"]}" додано до кошика.')
+    print(f'Товар "{product_to_add["name"]}" додано до кошика.')
     print("")
     show_cart()
 
@@ -177,8 +172,8 @@ def remove_from_cart():
         print("Товар не знайдено у кошику.")
         return
 
-    shopping_cart.pop(choice)
-    print(f"Товар {catalog[choice]['name']} видалено з кошика.")
+    removed_item = shopping_cart.pop(choice)
+    print(f'Товар "{removed_item['name']}" видалено з кошика.')
     print("")
     show_cart()
 
@@ -198,10 +193,10 @@ def enter_admin_panel():
             return
 
     print("Залишок товарів:")
-    for item in catalog:
-        print(f"{catalog.index(item)+1}. {item['name']} - {item['in_stock']} одиниць")
+    for item_num, item in enumerate(catalog):
+        print(f"{item_num + 1}. {item['name']} - {item['in_stock']} одиниць")
 
-    show_commands_list([1, 8])
+    show_available_commands([1, 8])
 
 
 # Постійне очікування вводу користувача
@@ -216,11 +211,11 @@ def wait_for_input():
 
         choice = int(choice) - 1
 
-        if 0 <= choice <= len(COMMANDS):
-            if COMMANDS[choice]["action"] == "exit_program":
+        if 0 <= choice <= len(available_commands):
+            if available_commands[choice]["action"] == "exit_program":
                 break
 
-            func_name = COMMANDS[choice]["action"]
+            func_name = available_commands[choice]["action"]
             globals()[func_name]()
         else:
             print("Невірний номер команди.")
@@ -228,5 +223,5 @@ def wait_for_input():
 
 # Точка входу
 if __name__ == "__main__":
-    show_commands_list()
+    show_available_commands()
     wait_for_input()
