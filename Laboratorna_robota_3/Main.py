@@ -34,8 +34,8 @@ COMMANDS = [
     },
 ]
 ADMINS = {  # Логін: пароль
-    "Admin1": "admin1",
-    "Admin2": "admin2"
+    "Admin1": "Admin1",
+    "Admin2": "Admin2"
 }
 
 # Змінні
